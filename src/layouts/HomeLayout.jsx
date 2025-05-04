@@ -9,7 +9,7 @@ import RighAside from "../components/homelayout/RighAside";
 const HomeLayout = () => {
   return (
     <div>
-      <header>
+      <header className="pt-3">
         <Header></Header>
         <section className="w-11/12 mx-auto my-3">
           <LatestNews></LatestNews>
