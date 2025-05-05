@@ -1,9 +1,11 @@
-import React, { useContext } from 'react';
-import { Link } from 'react-router';
+import React, { useContext, useState } from 'react';
+import { Link, useNavigate } from 'react-router';
 import { AuthContext } from '../Provider/AuthContext';
 
 const Register = () => {
-    const {user, setUser, createUserEmail} = useContext(AuthContext);
+    const {user, setUser, createUserEmail, updateUser} = useContext(AuthContext);
+    const [nameErr, setNameErr] = useState('');
+    const navigate = useNavigate();
     const handleFormSubmit = e => {
         e.preventDefault();
         console.log("Yesss");
@@ -12,9 +14,18 @@ const Register = () => {
         const photoUrl = e.target.photoUrl.value;
         const email = e.target.email.value;
         const password = e.target.password.value;
-
-        createUserEmail(email, password).then(result => {
-            console.log(result);
+        if(fullName.length<6){
+          setNameErr("Full Name should be minimum 6 Characters");
+          return;
+        }
+        else{
+          setNameErr("");
+        }
+        createUserEmail(email, password).then(() => {
+            updateUser({displayName: fullName, photoURL: photoUrl}).then(()=>{
+              setUser({...user, displayName:fullName, photoURL: photoUrl})
+            }).catch((error)=>console.log(error));
+            navigate('/');
         }).catch(error => {
             console.log(error);
         })
@@ -29,17 +40,19 @@ const Register = () => {
         <form onSubmit={handleFormSubmit} className="fieldset">
             {/* Full Name */}
           <label className="label">Full Name</label>
-          <input type="text" name='fullName' className="input" placeholder="Full Name" />
+          <input type="text" name='fullName' className="input" placeholder="Full Name" required />
+          <p className='text-xs text-red-400'>{nameErr}</p>
           {/* Photo URL */}
           <label className="label">Photo URL</label>
-          <input type="text" name='photoUrl' className="input" placeholder="Photo URL" />
+          <input type="text" name='photoUrl' className="input" placeholder="Photo URL" required />
           {/* Email */}
           <label className="label">Email</label>
-          <input type="email" name='email' className="input" placeholder="Email" />
+          <input type="email" name='email' className="input" placeholder="Email" required />
           {/* Password */}
           <label className="label">Password</label>
-          <input type="password" name='password' className="input" placeholder="Password" />
+          <input type="password" name='password' className="input" placeholder="Password" required />
           <button className="btn btn-neutral mt-4">Register</button>
+          
           <p className='font-semibold text-center'>Already Have an Account? <Link className='text-secondary' to="/auth/login">Login</Link></p>
         </form>
       </div>
